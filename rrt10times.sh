@@ -1,0 +1,10 @@
+python HW3.py
+python HW3.py
+python HW3.py
+python HW3.py
+python HW3.py
+python HW3.py
+python HW3.py
+python HW3.py
+python HW3.py
+python HW3.py
