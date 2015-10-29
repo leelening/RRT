@@ -28,8 +28,8 @@
 # include <openrave/openrave.h>
 # include "openrave/planningutils.h"
 # include "iostream"
+# include "preDefined.hpp"
 
-# define        LENGTH                      7
 
 class rrtNode
 {
@@ -73,7 +73,7 @@ public:
 
 	OpenRAVE::dReal* getConfigAtPtr(int i){return &_con_f.at(i);}
 
-	OpenRAVE::dReal getConfigAt(int i){return _con_f.at(i);}
+    OpenRAVE::dReal getConfigAt(int i){return _con_f[i];}
 
 	int getIndex(){return _index;} 
 

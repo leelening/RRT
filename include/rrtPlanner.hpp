@@ -35,7 +35,6 @@
 # include "openrave-core.h"
 # include <boost/thread/thread.hpp>
 # include <boost/bind.hpp>
-# include "ros/ros.h"
 # include <openrave/openrave.h>
 # include "openrave/planningutils.h"
 # include <time.h>
@@ -43,31 +42,22 @@
 # include <string>
 # include "rrtNode.hpp"
 # include "rrtTree.hpp"
+# include "preDefined.hpp"
 
-
-# define        DELTA                       0.0001
-# define        K                           100000
-# define        Time_Control                300
-# define        PI                          3.14159265359
-# define        BAIS                        36
-# define        MaxIterations_shortcut      200
-
-const std::vector<double>               weighted_vector                 =             {7,6,5,4,3,2,1};
-const double                            step_size                       =             0.05;
 
 class rrtPlanner
 {
 	private:
 		OpenRAVE::EnvironmentBasePtr	_p_env_rrt;
 		OpenRAVE::RobotBasePtr 			_robot_rrt;
-		rrtNode                       _start;
-		rrtNode                       _goal;
+        rrtNode                         _start;
+        rrtNode                         _goal;
 		std::vector<OpenRAVE::dReal>    _minimum_limits;
 		std::vector<OpenRAVE::dReal>    _maximum_limits;
 		double                          _step_size;
 		std::vector<std::string>        _joint_names;
 		std::vector<int>                _joint_indices;
-		rrtTree                       _t;
+        rrtTree                         _t;
 
 		int                             _basis;
 		std::vector<int>                _path;
@@ -81,14 +71,11 @@ class rrtPlanner
 			Advanced,
 			Trapped
 		};
-		rrtPlanner(OpenRAVE::EnvironmentBasePtr   &env,
+        rrtPlanner(OpenRAVE::EnvironmentBasePtr     &env,
 		OpenRAVE::RobotBasePtr                      &robot,
 		std::vector<OpenRAVE::dReal>                startconfiguration,
 		std::vector<OpenRAVE::dReal>                goalconfiguration,
 		std::vector<std::string>                    joint_names);
-
-
-  //      std::vector<rrtNode>	_t1;
 
 	rrtPlanner(){}
 	virtual             ~rrtPlanner(){}
@@ -98,7 +85,7 @@ class rrtPlanner
 	void                 setEnv(OpenRAVE::EnvironmentBasePtr &env){_p_env_rrt = env;}
 	void                 setRobot(OpenRAVE::RobotBasePtr &robot){_robot_rrt = robot;}
 	void                 setJointNames(std::vector<std::string> joint_names){_joint_names = joint_names;}
-	void                 setStepSize(double step_size){_step_size = step_size;}
+    void                 setStepSize(double step_size){_step_size = step_size;}
 	void                 setJointLimits();
 	void                 setStart(std::vector<OpenRAVE::dReal> start_config);
 	void                 setGoal(std::vector<OpenRAVE::dReal> goal_config);
@@ -119,22 +106,22 @@ class rrtPlanner
 
 
 
-	void	init(rrtNode q_init){addNode(q_init);}
-	rrtNode	nearestRRTNode(rrtNode &q_rand);
-	int		randConf(rrtNode &q_rand);
-	void	addNode(rrtNode q_new){_t.addNode(q_new);}
-	void	plan(rrtNode q_init);
+    void	init(rrtNode &q_init)               {addNode(q_init);}
+    void	addNode(rrtNode &q_new)             {_t.addNode(q_new);}
+    rrtNode	nearestRRTNode(rrtNode &q_rand);
+    void    randConf(rrtNode &q_rand);
+    void	plan(rrtNode q_init);
 	int		extend(rrtNode &q_rand);
 	void	shortcutSmooth();
-	bool	addEdge(rrtNode q_new,rrtNode q_near);
+    bool    addEdge(rrtNode q_new,rrtNode q_near);
 	bool	collisionFree(rrtNode &node);
 	void	path(rrtNode &goal, std::vector<int> &path);
-	void	drawEndEffector(rrtNode &q_new,int i);
+    void	drawEndEffector(rrtNode &q_near,int i);
 	double	euclideanDistance(rrtNode &q_rand, rrtNode &q_near);
 	void	generateTraj();
-    int	connect(rrtNode &q_rand);
-	bool	connectLine(rrtNode q_1, rrtNode q_2);
-	double	rho(rrtNode x1,rrtNode x2);
+    int     connect(rrtNode &q_rand);
+    bool	connectLine(rrtNode q_1, rrtNode q_2);
+    double	rho(rrtNode x1,rrtNode x2);
 	bool	newConfig(rrtNode &q_rand,rrtNode &q_near,rrtNode &q_new);
 
 };

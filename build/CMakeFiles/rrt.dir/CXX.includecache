@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+../include/preDefined.hpp
+
 ../include/rrtNode.hpp
 vector
 ../include/vector
@@ -15,6 +17,8 @@ openrave/planningutils.h
 ../include/openrave/planningutils.h
 iostream
 ../include/iostream
+preDefined.hpp
+../include/preDefined.hpp
 
 ../include/rrtPlanner.hpp
 math.h
@@ -39,8 +43,6 @@ boost/thread/thread.hpp
 -
 boost/bind.hpp
 -
-ros/ros.h
-../include/ros/ros.h
 openrave/openrave.h
 -
 openrave/planningutils.h
@@ -55,32 +57,20 @@ rrtNode.hpp
 ../include/rrtNode.hpp
 rrtTree.hpp
 ../include/rrtTree.hpp
+preDefined.hpp
+../include/preDefined.hpp
 
 ../include/rrtTree.hpp
 rrtNode.hpp
 ../include/rrtNode.hpp
 vector
 ../include/vector
+preDefined.hpp
+../include/preDefined.hpp
 
-/home/leningli/Desktop/rrt/src/main.cpp
+/home/leningli/Desktop/rrt/src/rrtPlanner.cpp
 rrtPlanner.hpp
 /home/leningli/Desktop/rrt/src/rrtPlanner.hpp
-openrave-core.h
-/home/leningli/Desktop/rrt/src/openrave-core.h
-iostream
-/home/leningli/Desktop/rrt/src/iostream
-cstring
-/home/leningli/Desktop/rrt/src/cstring
-string
-/home/leningli/Desktop/rrt/src/string
-boost/thread/thread.hpp
--
-boost/bind.hpp
--
-eigen3/Eigen/Eigen
--
-openrave/planningutils.h
--
 
 /usr/include/openrave-0.9/openrave-core.h
 openrave/openrave.h

@@ -32,7 +32,6 @@ rrtPlanner::rrtPlanner(OpenRAVE::EnvironmentBasePtr &env,
 	std::vector<std::string> joint_names):
 	_p_env_rrt(env),
 	_robot_rrt(robot),
-	_step_size(step_size),
 	_joint_names(joint_names)
 {
 	_start.assginNode(start_config);
@@ -65,19 +64,23 @@ void rrtPlanner::setGoal(std::vector<OpenRAVE::dReal> goal_config)
 
 void rrtPlanner::setJointLimits()
 {
-	for (unsigned int i = 0; i < _joint_names.size(); i++)
+    std::cout<<"The following are the limtations!!!"<<std::endl;
+    for (unsigned int i = 0; i < _joint_names.size() - 1; i++)
 	{
 		std::cout<<_joint_names[i]<<" - ";
 		_joint_indices.push_back(_robot_rrt->GetJointIndex(_joint_names[i]));
 		std::cout<<_joint_indices[i]<<"   "<<std::endl;
 	}
+    std::cout<<_joint_names[_joint_names.size() - 1]<<" - ";
+    _joint_indices.push_back(_robot_rrt->GetJointIndex(_joint_names[_joint_indices.size() - 1]));
+    std::cout<<_joint_indices[_joint_indices.size() - 1]<<std::endl;
 
 	_robot_rrt->GetDOFLimits(_minimum_limits,_maximum_limits,_joint_indices);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int rrtPlanner::randConf(rrtNode &q_rand)
+void rrtPlanner::randConf(rrtNode &q_rand)
 {
 	std::vector<OpenRAVE::dReal>                    rand_vector(LENGTH);
 	OpenRAVE::KinBody::JointPtr                     joint;
@@ -104,23 +107,23 @@ int rrtPlanner::randConf(rrtNode &q_rand)
 			}
 		}
 		q_rand.assginNode(rand_vector);
-	}
-	return 0;
+;	}
 }
 
 void rrtPlanner::plan(rrtNode q_init)
 {
 
-	clock_t running_start,running_finish;
-	double totaltime;
+    clock_t     running_start,running_finish;
+    double      totaltime;
+
 	running_start=clock();
 
 	int time = std::time(0);
 	std::srand(time);
 //  std::srand(1427150762);
-//    std::srand(1427142869);
-//    std::srand(1427018784);
-//    std::srand(1427077258);
+//  std::srand(1427142869);
+//  std::srand(1427018784);
+//  std::srand(1427077258);
 
 	rrtNode                                             q_rand;
 	STATE                                               S;
@@ -130,15 +133,18 @@ void rrtPlanner::plan(rrtNode q_init)
 
 	start = std::chrono::system_clock::now();
 
+
 	init(q_init);
 
 	for(int i = 1 ; i <= K ; ++i)
 	{
-
-		end = std::chrono::system_clock::now();
-		elapsed_seconds = end - start;
-		if (elapsed_seconds.count() > Time_Control)
-			return;
+//		end = std::chrono::system_clock::now();
+//		elapsed_seconds = end - start;
+//        if (elapsed_seconds.count() > TIME_CONTROL)
+//        {
+//            std::cout<<"Sorry, I cannot find the solution!!!"<<std::endl;
+//			return;
+//        }
 
 		randConf(q_rand);
 		S = (STATE)connect(q_rand);
@@ -163,12 +169,13 @@ rrtNode rrtPlanner::nearestRRTNode(rrtNode &q_rand)
 
 	OpenRAVE::dReal minimun  = std::numeric_limits<OpenRAVE::dReal>::max();
 
-	for (int i = 0;i < _t.getSize();++i)
+    for (int i = 0;i < _t.getSize();i++)
 	{
-		if (rho(_t.getVertixAt(i),q_rand) < minimun)
+        double dist = rho(_t.getVertixAt(i),q_rand);
+        if ( dist < minimun)
 		{
 			q_near = _t.getVertices()[i];
-			minimun = rho(_t.getVertixAt(i),q_rand);
+            minimun = dist;
 		}
 	}
 
@@ -181,8 +188,8 @@ double rrtPlanner::euclideanDistance(rrtNode &n1, rrtNode &n2)
 {
 	double dist = 0;
 	for (unsigned int i = 0; i < LENGTH; i++)
-		dist = dist + (n1.getConfigAt(i) - n2.getConfigAt(i)) * (n1.getConfigAt(i) - n2.getConfigAt(i));
-	return dist;
+        dist += (n1.getConfigAt(i) - n2.getConfigAt(i)) * (n1.getConfigAt(i) - n2.getConfigAt(i));
+    return dist;
 }
 
 bool rrtPlanner::newConfig(rrtNode &q_rand,rrtNode &q_near,rrtNode &q_new)
@@ -190,32 +197,38 @@ bool rrtPlanner::newConfig(rrtNode &q_rand,rrtNode &q_near,rrtNode &q_new)
 
 	q_new.getConfigPtr()->resize(LENGTH);
 
-	double distance = 0;
+    double dist = 0;
 
 	double step_size = _step_size;
 
-	distance = euclideanDistance(q_rand,q_near);
+    dist = euclideanDistance(q_rand,q_near);
 
-	if (step_size > distance)
-		step_size = distance;
+    if (step_size > dist)
+    {
+        step_size = dist;
+    }
+
+
 
 	for (int i = 0; i < LENGTH; i++)
 	{
-		q_new.setConfAt(i, (q_near.getConfigAt(i) + (q_rand.getConfigAt(i) - q_near.getConfigAt(i)) * step_size / distance));
+        q_new.setConfAt(i, (q_near.getConfigAt(i) + (q_rand.getConfigAt(i) - q_near.getConfigAt(i)) * step_size / dist));
 	}
 
-	if (collisionFree(q_new) == false)
-		return true;
+    if (collisionFree(q_new) == false)
+    {
+        return true;
+    }
 	else
 		return false;
 }
 
 bool rrtPlanner::collisionFree(rrtNode &node)
 {
-//    std::vector<OpenRAVE::KinBodyPtr>           KinBodies;
+    std::vector<OpenRAVE::KinBodyPtr>           KinBodies;
 	std::vector<OpenRAVE::dReal>                dof_values;
 
-//    _p_env_BiRRT->GetBodies(KinBodies);
+    _p_env_rrt->GetBodies(KinBodies);
 
 	_robot_rrt->SetActiveDOFs(_joint_indices);
 
@@ -230,22 +243,22 @@ bool rrtPlanner::collisionFree(rrtNode &node)
 	if (_p_env_rrt->CheckCollision(_robot_rrt) == false)
 	{
 //        for (unsigned int i = 0; i < KinBodies.size(); i++)
-//            if ((KinBodies[i] != _robot_BiRRT)&&(_p_env_BiRRT->CheckCollision(_robot_BiRRT, KinBodies[i]) == true))
+//            if ((KinBodies[i] != _robot_rrt)&&(_p_env_rrt->CheckCollision(_robot_rrt, KinBodies[i]) == true))
 //                    return true;
-		if(_robot_rrt->CheckSelfCollision() == false)
-			return false;
+        if(_robot_rrt->CheckSelfCollision() == false)
+            return false;
 	}
 	return true;
 }
 
 double rrtPlanner::rho(rrtNode x1, rrtNode x2)
 {
-    double distance = 0;
+    double dis = 0;
     for(unsigned int i = 0;i < LENGTH; ++i)
     {
-        distance = distance + ((x1.getConfigAt(i) - x2.getConfigAt(i))* _weighted_vector[i] * (x1.getConfigAt(i) - x2.getConfigAt(i)));
+        dis += (x1.getConfigAt(i) - x2.getConfigAt(i)) * _weighted_vector[i] * (x1.getConfigAt(i) - x2.getConfigAt(i));
     }
-    return distance;
+    return dis;
 }
 
 int rrtPlanner::connect(rrtNode &q_rand)
@@ -253,6 +266,7 @@ int rrtPlanner::connect(rrtNode &q_rand)
     STATE S = Advanced;
     while(S == Advanced)
     {
+        drawEndEffector(q_rand,3);
         S = (STATE)extend(q_rand);
     }
     return S;
@@ -264,10 +278,12 @@ int rrtPlanner::extend(rrtNode &q_rand)
     rrtNode q_new;
 
     q_near = nearestRRTNode(q_rand);
+    drawEndEffector(q_near,0);
 
     if(newConfig(q_rand, q_near, q_new) == true)
     {
             addNode(q_new);
+            addEdge(q_new,q_near);
             if (q_new == q_rand)
             {
                 return Reached;
@@ -278,6 +294,40 @@ int rrtPlanner::extend(rrtNode &q_rand)
             }
     }
     return Trapped;
+}
+
+bool rrtPlanner::addEdge(rrtNode q_new,rrtNode q_near)
+{
+    int     q_new_index     = -1;
+    int     q_near_index    = -1;
+    bool    q_new_found     = false;
+    bool    q_near_found    = false;
+    for (int i = 0;i <_t.getSize();i++)
+    {
+        if(_t.getVertixAt(i) == q_new)
+        {
+           q_new_index = i;
+           _t.getVertixAtPtr(i)->setIndex(i);
+           q_new_found = true;
+        }
+        if(_t.getVertixAt(i) == q_near)
+        {
+            q_near_index = i;
+            _t.getVertixAtPtr(i)->setIndex(i);
+            q_near_found = true;
+        }
+        if(q_new_found == true && q_near_found == true)
+        {
+            break;
+        }
+    }
+    if ((q_near_found == true)&&(q_new_found == true))
+    {
+        _t.getVertixAtPtr(q_new_index)->setParent(q_near_index);
+        return true;
+    }
+    else
+        return false;
 }
 
 void rrtPlanner::shortcutSmooth()
@@ -292,7 +342,7 @@ void rrtPlanner::shortcutSmooth()
 	_shortcut_path.clear();
 	_shortcut_path = _path;
 
-	for (int i = 0; i < MaxIterations_shortcut; i++)
+    for (int i = 0; i < MAX_SHORTCUT; i++)
 	{
 		index_1 = _shortcut_path.size() *( (double)std::rand() / (double)RAND_MAX );
 		index_2 = _shortcut_path.size() *( (double)std::rand() / (double)RAND_MAX );
@@ -369,7 +419,7 @@ void rrtPlanner::path(rrtNode &goal, std::vector<int> &path)
 	shortcutSmooth();
 }
 
-void rrtPlanner::drawEndEffector(rrtNode &q_new,int color_flag)
+void rrtPlanner::drawEndEffector(rrtNode &q_near,int color_flag)
 {
 	static std::vector<OpenRAVE::GraphHandlePtr>    handles;
 	static OpenRAVE::GraphHandlePtr                 handle;
@@ -395,10 +445,19 @@ void rrtPlanner::drawEndEffector(rrtNode &q_new,int color_flag)
 		scale = 8.0;
 	}
 
+    if(color_flag == 3)
+    {
+        color[0] = 0;
+        color[1] = 1.0;
+        color[2] = 0;
+        color[3] = 1.0;
+        scale = 8.0;
+    }
+
 	OpenRAVE::KinBody::LinkPtr                      end_effector;
 	OpenRAVE::Transform                             transform;
 
-	_robot_rrt->SetActiveDOFValues(q_new.getConfig());
+    _robot_rrt->SetActiveDOFValues(q_near.getConfig());
 
 	end_effector = _robot_rrt->GetLink("l_gripper_l_finger_tip_link");
 	transform = end_effector->GetTransform();

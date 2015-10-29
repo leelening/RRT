@@ -21,42 +21,6 @@ void setViewer(OpenRAVE::EnvironmentBasePtr penv, const std::string& viewername)
 	viewer->main(showgui);
 }
 
-void raiseArm(OpenRAVE::EnvironmentBasePtr &p_env, OpenRAVE::RobotBasePtr &robot)
-{
-	std::vector<OpenRAVE::dReal> init_position;
-
-	init_position = {1.29023451,
-						-2.32099996,
-						-0.69800004,
-						1.27843491,
-						-2.32100002,
-						-0.69799996};
-
-	robot->SetActiveDOFValues(init_position);
-}
-
-void setArmInit(OpenRAVE::EnvironmentBasePtr &p_env, OpenRAVE::RobotBasePtr &robot)
-{
-	std::vector<std::string>    joints;
-	std::vector<int>            joints_indecies;
-
-	joints = {"l_shoulder_lift_joint",
-			"l_elbow_flex_joint",
-			"l_wrist_flex_joint",
-			"r_shoulder_lift_joint",
-			"r_elbow_flex_joint",
-			"r_wrist_flex_joint"};
-
-
-	for(unsigned int i = 0; i<joints.size();i++)
-	{
-		joints_indecies.push_back(robot->GetJointIndex(joints[i]));
-	}
-
-	robot->SetActiveDOFs(joints_indecies);
-	raiseArm(p_env,robot);
-}
-
 void setWeighted(std::vector<double> weighted_vector)
 {
 	std::cout<< "The weighted vector is [" << weighted_vector[0];
@@ -85,15 +49,17 @@ void setJointlimits()
 	planner.setJointLimits();
 }
 
-void setRobot()
+void setRobot(OpenRAVE::RobotBasePtr robot)
 {
-	std::vector<OpenRAVE::RobotBasePtr>     robots;
+    std::cout<<"Now we are setting the robot!!!"<<std::endl;
 
-	OpenRAVE::RobotBasePtr                  robot;
+//	std::vector<OpenRAVE::RobotBasePtr>     robots;
 
-	planner.getEnvPtr()->GetRobots(robots);
+//	OpenRAVE::RobotBasePtr                  robot;
 
-	robot = robots[0];
+//	planner.getEnvPtr()->GetRobots(robots);
+
+//	robot = robots[0];
 
 	planner.setRobot(robot);
 }
@@ -101,12 +67,12 @@ void setRobot()
 void buildTree()
 {
 	std::cout<<"Now we are initialized the tree!!!"<<std::endl;
-	for (unsigned int i = 0; i < LENGTH; i++)
-		std::cout << planner.getStart().getConfigAt(i) << " - ";
-	std::cout << std::endl;
-	for (int i = 0; i < LENGTH; i++)
-		std::cout << planner.getGoal().getConfigAt(i)<< " - ";
-	std::cout << std::endl;
+//	for (unsigned int i = 0; i < LENGTH; i++)
+//		std::cout << planner.getStart().getConfigAt(i) << " - ";
+//	std::cout << std::endl;
+//	for (int i = 0; i < LENGTH; i++)
+//		std::cout << planner.getGoal().getConfigAt(i)<< " - ";
+//	std::cout << std::endl;
 	planner.plan(planner.getStart());
 }
 
@@ -130,14 +96,113 @@ void setGoal(std::vector<OpenRAVE::dReal> goal_config)
 	planner.setGoal(goal_config);
 }
 
+void setEnv(OpenRAVE::EnvironmentBasePtr p_env)
+{
+    std::cout<<"We are setting environment!!!"<<std::endl;
+
+    planner.setEnv(p_env);
+}
+
 void setJointnames(std::vector<std::string> joint_names)
 {
-	std::cout<< "The joint names are [" << joint_names[0];
+    std::cout<< "The joint names are [" << joint_names[0];
 	for(unsigned int i = 1; i < joint_names.size();i++)
 	std::cout<<","<<joint_names[i];
 	std::cout<< "]"<<std::endl;
 
 	planner.setJointNames(joint_names);
+}
+
+void action(OpenRAVE::EnvironmentBasePtr p_env, OpenRAVE::RobotBasePtr robot)
+{
+    std::vector<OpenRAVE::dReal> start_config, goal_config;  
+    std::vector<std::string> joints_names;
+    std::vector<double>      weighted_vector;
+
+    //startconfig = [-0.15,0.075,-1.008,0,0,0,0]
+
+    start_config.push_back(-0.15);
+    start_config.push_back(0.075);
+    start_config.push_back(-1.008);
+    start_config.push_back(0);
+    start_config.push_back(0);
+    start_config.push_back(0);
+    start_config.push_back(0);
+
+    //goalconfig = [0.449,-0.201,0,0,0,0,0]
+
+    goal_config.push_back(0.449);
+    goal_config.push_back(-0.201);
+    goal_config.push_back(0);
+    goal_config.push_back(0);
+    goal_config.push_back(0);
+    goal_config.push_back(0);
+    goal_config.push_back(0);
+
+    setStart(start_config);
+    setGoal(goal_config);
+
+    setEnv(p_env);
+    setStepSize(STEP_SIZE);
+
+    setRobot(robot);
+
+    joints_names.push_back("l_shoulder_pan_joint");
+    joints_names.push_back("l_shoulder_lift_joint");
+    joints_names.push_back("l_elbow_flex_joint");
+    joints_names.push_back("l_upper_arm_roll_joint");
+    joints_names.push_back("l_forearm_roll_joint");
+    joints_names.push_back("l_wrist_flex_joint");
+    joints_names.push_back("l_wrist_roll_joint");
+    setJointnames(joints_names);
+
+    weighted_vector.push_back(7);
+    weighted_vector.push_back(6);
+    weighted_vector.push_back(5);
+    weighted_vector.push_back(4);
+    weighted_vector.push_back(3);
+    weighted_vector.push_back(2);
+    weighted_vector.push_back(1);
+
+    setWeighted(weighted_vector);
+
+    setJointlimits();
+
+    setBais(BAIS);
+
+    buildTree();
+
+}
+
+void tuckArms(OpenRAVE::EnvironmentBasePtr p_env, OpenRAVE::RobotBasePtr robot)
+{
+    std::vector<std::string>        joints_names;
+    std::vector<OpenRAVE::dReal>    joints_values;
+    std::vector<int>                joints_indices;
+    std::vector<OpenRAVE::dReal>    v;
+
+    joints_names.push_back("l_shoulder_lift_joint");
+    joints_names.push_back("l_elbow_flex_joint");
+    joints_names.push_back("l_wrist_flex_joint");
+    joints_names.push_back("r_shoulder_lift_joint");
+    joints_names.push_back("r_elbow_flex_joint");
+    joints_names.push_back("r_wrist_flex_joint");
+
+    joints_values.push_back(1.29023451);
+    joints_values.push_back(-2.32099996);
+    joints_values.push_back(-0.69800004);
+    joints_values.push_back(1.27843491);
+    joints_values.push_back(-2.32100002);
+    joints_values.push_back(-0.69799996);
+
+    for(unsigned int i = 0; i < joints_names.size(); i++)
+    {
+        joints_indices.push_back(robot->GetJointIndex(joints_names.at(i)));
+    }
+    robot->SetActiveDOFs(joints_indices);
+    robot->SetActiveDOFValues(joints_values);
+    robot->GetDOFValues(v);
+    robot->GetController()->SetDesired(v);
 }
 
 int main(int argc, char *argv[])
@@ -146,10 +211,7 @@ int main(int argc, char *argv[])
 	OpenRAVE::EnvironmentBasePtr            p_env;
 	std::vector<OpenRAVE::RobotBasePtr>     robots;
 	OpenRAVE::RobotBasePtr                  robot;
-	std::string                             viewername = "qtcoin";
-	OpenRAVE::Transform                     puma_transform;
-
-
+    std::string                             viewername = "qtcoin";
 
 	OpenRAVE::RaveInitialize(true);
 	p_env = OpenRAVE::RaveCreateEnvironment();
@@ -158,16 +220,17 @@ int main(int argc, char *argv[])
 	boost::thread   thviewer(boost::bind(setViewer, p_env, viewername));
 
 	p_env->Load("../scenes/hw3.env.xml");
-	//p_env->Load("../robots/myrobot.robot.xml");
 
 	p_env->GetRobots(robots);
 	robot =  robots[0];
 
-	setArmInit(p_env,robot);
+    tuckArms(p_env,robot);
+
+    action(p_env,robot);
 
 	thviewer.join();
 
 	p_env->Destroy();
 
-	return 0;
+    exit(0);
 }

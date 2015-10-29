@@ -21,6 +21,7 @@ set(HEADERS
     include/rrtPlanner.hpp
     include/rrtNode.hpp
     include/rrtTree.hpp
+    include/preDefined.hpp
     )
 
 #link_directories(${OpenRAVE_LIBRARY_DIRS}

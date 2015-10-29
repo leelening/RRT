@@ -26,6 +26,7 @@
 
 # include "rrtNode.hpp"
 # include "vector"
+# include "preDefined.hpp"
 
 class rrtTree
 {
@@ -33,19 +34,22 @@ public:
 
 	rrtTree(){}
 	~rrtTree(){}
-	void addNode(rrtNode &v){_vertices.push_back(v);}
 
-	void deleteNode(rrtNode &v);
+    void                        addNode(rrtNode &v)     {_vertices.push_back(v);}
 
-	void deleteNodeAt(int i){_vertices.erase(_vertices.begin()+i);}
+    void                        deleteNode(rrtNode &v);
 
-	int getSize(){return _vertices.size();}
+    void                        deleteNodeAt(int i)     {_vertices.erase(_vertices.begin()+i);}
 
-	std::vector<rrtNode>* getVerticesPtr(){return &_vertices;}
+    int                         getSize()               {return _vertices.size();}
 
-	std::vector<rrtNode>  getVertices(){return _vertices;}
+    std::vector<rrtNode>*       getVerticesPtr()        {return &_vertices;}
 
-	rrtNode				  getVertixAt(int i){return _vertices[i];}
+    std::vector<rrtNode>        getVertices()           {return _vertices;}
+
+    rrtNode                     getVertixAt(int i)      {return _vertices.at(i);}
+
+    rrtNode*                    getVertixAtPtr(int i)   {return &_vertices.at(i);}
 
 private:
 
