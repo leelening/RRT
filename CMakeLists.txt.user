@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.4.1, 2015-10-29T18:27:35. -->
+<!-- Written by Qt Creator 2.4.1, 2015-11-15T21:43:50. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -123,10 +123,10 @@
     <value type="bool" key="Analyzer.Valgrind.Callgrind.EnableCacheSim">false</value>
     <value type="bool" key="Analyzer.Valgrind.Callgrind.EnableEventToolTips">true</value>
     <value type="bool" key="Analyzer.Valgrind.Callgrind.EnableEventToolTips">true</value>
-    <value type="double" key="Analyzer.Valgrind.Callgrind.MinimumCostRatio">0.01</value>
-    <value type="double" key="Analyzer.Valgrind.Callgrind.MinimumCostRatio">0.01</value>
-    <value type="double" key="Analyzer.Valgrind.Callgrind.VisualisationMinimumCostRatio">10</value>
-    <value type="double" key="Analyzer.Valgrind.Callgrind.VisualisationMinimumCostRatio">10</value>
+    <value type="double" key="Analyzer.Valgrind.Callgrind.MinimumCostRatio">0</value>
+    <value type="double" key="Analyzer.Valgrind.Callgrind.MinimumCostRatio">0</value>
+    <value type="double" key="Analyzer.Valgrind.Callgrind.VisualisationMinimumCostRatio">0</value>
+    <value type="double" key="Analyzer.Valgrind.Callgrind.VisualisationMinimumCostRatio">0</value>
     <value type="bool" key="Analyzer.Valgrind.FilterExternalIssues">true</value>
     <value type="bool" key="Analyzer.Valgrind.FilterExternalIssues">true</value>
     <value type="int" key="Analyzer.Valgrind.NumCallers">25</value>

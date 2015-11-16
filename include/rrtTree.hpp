@@ -39,6 +39,8 @@ public:
 
     void                        deleteNode(rrtNode &v);
 
+    void                        printTree();
+
     void                        deleteNodeAt(int i)     {_vertices.erase(_vertices.begin()+i);}
 
     int                         getSize()               {return _vertices.size();}

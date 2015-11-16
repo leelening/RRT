@@ -9,5 +9,9 @@
 # define        MAX_SHORTCUT                200
 # define        LENGTH                      7
 # define        STEP_SIZE                   0.05
+//# define        TIME                        1427150762
+# define        TIME                        1427142869
+//# define        TIME                        1427018784
+//# define        TIME                        1427077258
 
 #endif // PREDEFINED_HPP

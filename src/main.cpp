@@ -21,7 +21,7 @@ void setViewer(OpenRAVE::EnvironmentBasePtr penv, const std::string& viewername)
 	viewer->main(showgui);
 }
 
-void setWeighted(std::vector<double> weighted_vector)
+void setWeighted(std::vector<OpenRAVE::dReal> weighted_vector)
 {
 	std::cout<< "The weighted vector is [" << weighted_vector[0];
 	for(unsigned int i = 1; i < weighted_vector.size();i++)
@@ -31,7 +31,7 @@ void setWeighted(std::vector<double> weighted_vector)
 	planner.setWeightedVector(weighted_vector);
 }
 
-void setStepSize(double step_size)
+void setStepSize(OpenRAVE::dReal step_size)
 {
 	std::cout<<"The step size is  "<<step_size<<std::endl;
 	planner.setStepSize(step_size);
@@ -117,7 +117,7 @@ void action(OpenRAVE::EnvironmentBasePtr p_env, OpenRAVE::RobotBasePtr robot)
 {
     std::vector<OpenRAVE::dReal> start_config, goal_config;  
     std::vector<std::string> joints_names;
-    std::vector<double>      weighted_vector;
+    std::vector<OpenRAVE::dReal>      weighted_vector;
 
     //startconfig = [-0.15,0.075,-1.008,0,0,0,0]
 

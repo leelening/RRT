@@ -35,3 +35,11 @@ void rrtTree::deleteNode(rrtNode &v)
 	}
 	return ;
 }
+
+void rrtTree::printTree()
+{
+    for(int i = 0; i < getSize(); i++)
+    {
+        _vertices[i].printNode();
+    }
+}
