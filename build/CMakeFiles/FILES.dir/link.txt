@@ -1,2 +1,0 @@
-/usr/bin/ar cr libFILES.a  CMakeFiles/FILES.dir/src/rrtNode.cpp.o CMakeFiles/FILES.dir/src/rrtTree.cpp.o CMakeFiles/FILES.dir/src/rrtPlanner.cpp.o
-/usr/bin/ranlib libFILES.a

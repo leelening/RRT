@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
 
 	boost::thread   thviewer(boost::bind(setViewer, p_env, viewername));
 
-	p_env->Load("../scenes/hw3.env.xml");
+	p_env->Load("scenes/hw3.env.xml");
 
 	p_env->GetRobots(robots);
 	robot =  robots[0];

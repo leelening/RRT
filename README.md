@@ -1,4 +1,4 @@
-Motion Planning: A simple based algorithm
+Motion Planning: A sample based algorithm
 ========
 This is a sample-based algorithm called rapidly-exploring random tree, which implemented in C++ using OpenRAVE.
 
