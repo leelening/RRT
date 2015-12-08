@@ -43,6 +43,9 @@
 # include "rrtNode.hpp"
 # include "rrtTree.hpp"
 # include "preDefined.hpp"
+# include <limits>
+# include <unistd.h>
+# include <random>
 
 
 class rrtPlanner
@@ -62,7 +65,7 @@ class rrtPlanner
 		int                             _basis;
 		std::vector<int>                _path;
 		std::vector<int>                _shortcut_path;
-		std::vector<OpenRAVE::dReal>             _weighted_vector;
+        std::vector<OpenRAVE::dReal>    _weighted_vector;
 
 	public:
 		enum STATE
@@ -81,7 +84,8 @@ class rrtPlanner
 	virtual             ~rrtPlanner(){}
 
 	void                 setBais(int i){_basis = i;}
-	void                 setWeightedVector(std::vector<OpenRAVE::dReal> weighted_vector){_weighted_vector = weighted_vector;}
+    void                 setWeightedVector();
+    void                 setWeightedVector(std::vector<OpenRAVE::dReal> weighted_vector){_weighted_vector = weighted_vector;}
 	void                 setEnv(OpenRAVE::EnvironmentBasePtr &env){_p_env_rrt = env;}
 	void                 setRobot(OpenRAVE::RobotBasePtr &robot){_robot_rrt = robot;}
 	void                 setJointNames(std::vector<std::string> joint_names){_joint_names = joint_names;}
@@ -89,9 +93,10 @@ class rrtPlanner
 	void                 setJointLimits();
 	void                 setStart(std::vector<OpenRAVE::dReal> start_config);
 	void                 setGoal(std::vector<OpenRAVE::dReal> goal_config);
+    void                 setJointIndices();
 
 	int								getBais(){return _basis;}
-	std::vector<OpenRAVE::dReal>*			getWeightedVectorPtr(){return &_weighted_vector;}
+    std::vector<OpenRAVE::dReal>*	getWeightedVectorPtr(){return &_weighted_vector;}
 	OpenRAVE::EnvironmentBasePtr	getEnvPtr() {return _p_env_rrt;}
 	OpenRAVE::RobotBasePtr          getRobotPtr(){return _robot_rrt;}
 	rrtNode*  						getStartPtr(){return &_start;}
@@ -100,7 +105,7 @@ class rrtPlanner
 	rrtNode							getGoal(){return _goal;}
 	std::vector<std::string>*		getJointNamesPtr(){return &_joint_names;}
 	std::vector<std::string>		getJointName(){return _joint_names;}
-	OpenRAVE::dReal                          getStepSize(){return _step_size;}
+    OpenRAVE::dReal                 getStepSize(){return _step_size;}
 	rrtTree							getTree(){return _t;}
 	rrtTree*						getTreePtr(){return &_t;}
 
@@ -109,7 +114,7 @@ class rrtPlanner
     void	init(rrtNode &q_init)               {addNode(q_init);}
     void	addNode(rrtNode &q_new)             {_t.addNode(q_new);}
     rrtNode	nearestRRTNode(rrtNode &q_rand);
-    void    randConf(rrtNode &q_rand);
+    bool    randConf(rrtNode &q_rand);
     void	plan(rrtNode q_init);
 	int		extend(rrtNode &q_rand);
 	void	shortcutSmooth();
@@ -117,8 +122,8 @@ class rrtPlanner
 	bool	collisionFree(rrtNode &node);
 	void	path(rrtNode &goal, std::vector<int> &path);
     void	drawEndEffector(rrtNode &q_near,int i);
-	OpenRAVE::dReal	euclideanDistance(rrtNode &q_rand, rrtNode &q_near);
 	void	generateTraj();
+    double  randomRange (double range_min, double range_max);
     int     connect(rrtNode &q_rand);
     bool	connectLine(rrtNode q_1, rrtNode q_2);
     OpenRAVE::dReal	rho(rrtNode x1,rrtNode x2);
