@@ -32,12 +32,14 @@ class rrtTree
 {
 public:
 
-	rrtTree(){}
-	~rrtTree(){}
+    rrtTree(){}
+    ~rrtTree(){}
 
     void                        addNode(rrtNode &v)     {_vertices.push_back(v);}
 
     void                        deleteNode(rrtNode &v);
+
+    void                        printTree();
 
     void                        deleteNodeAt(int i)     {_vertices.erase(_vertices.begin()+i);}
 
@@ -53,7 +55,7 @@ public:
 
 private:
 
-	std::vector<rrtNode>    _vertices;
+    std::vector<rrtNode>    _vertices;
 
 };
 #endif //_RRTTREE_H_
