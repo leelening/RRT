@@ -207,12 +207,4 @@ Academic use only.
 ## Author
 
 **Lening Li**
-- M.S. in Computer Science (WPI, 2016)
-- M.S. in Robotics Engineering (WPI, 2018)
-- Ph.D. in Robotics Engineering (WPI, 2022)
-
-## References
-
-- LaValle, S. M. (1998). Rapidly-exploring random trees: A new tool for path planning. *Technical Report*.
-- LaValle, S. M., & Kuffner, J. J. (2001). Rapidly-exploring random trees: Progress and prospects. *Algorithmic and Computational Robotics*.
-- Karaman, S., & Frazzoli, E. (2011). Sampling-based algorithms for optimal motion planning. *International Journal of Robotics Research*.
+- GitHub: [@leelening](https://github.com/leelening)
